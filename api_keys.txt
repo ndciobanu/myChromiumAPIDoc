@@ -1,0 +1,85 @@
+API Keys
+Important Note: This page is about building Chromium. If you have arrived on this page by searching for a specific API which you want to use for some other purpose, this is not the page you want. Do not email the chromium-dev list to ask how to get quota for an API; the section "Getting Keys for Your Chromium Derivative" below has the same answer you will get from the list.
+
+Do not email chromium-dev for quota questions about the Speech API.
+
+Some features of Chromium use Google APIs, and to access those APIs, either an API Key or a set of OAuth 2.0 tokens is required. Setting up API keys is optional. If you don't do it, the specific APIs using Google services won't work in your custom build, but all other features will run normally.
+
+
+You can specify the API keys to use either when you build Chromium, or at runtime using environment variables. First, you need to acquire keys for yourself.
+
+
+ Software distribution with keys acquired for yourself is allowed, but the keys themselves cannot be shared with parties outside the legal entity that accepted the API ToS.  Keep in mind that a number of the APIs will have no or very limited quota and not all of the APIs have additional quota available for purchase.
+Acquiring Keys
+
+Make sure you are a member of chromium-dev@chromium.org (you can just subscribe to chromium-dev and choose not to receive mail).
+For convenience, the APIs below are only visible to people subscribed to that group.
+Make sure you are logged in with the Google account associated with the email address that you used to subscribe to chromium-dev.
+Go to https://cloud.google.com/console
+Click the blue  Create Project  button.
+(Optional) You may add other members of your organization or team on the Team tab.
+In the 'APIs & auth' > APIs tab, click the On/Off button to turn each of the following APIs to the On position, and read and agree to the Terms of Service that is shown: 
+(This list might be out of date; try searching for APIs starting with "Chrome" or having "for Chrome" in the name.)
+Chrome Remote Desktop API
+Chrome Spelling API
+Chrome Suggest API
+Chrome Sync API
+Chrome Translate Element
+Google Maps Geolocation API 
+(requires enabling billing but is free to use; you can skip this one, in which case geolocation features of Chrome will not work)
+Safe Browsing API
+Speech API (See the Important Note at the top of the page)
+Time Zone API
+Google Cloud Messaging for Chrome
+Drive API (Optional, enable this for Files.app on Chrome OS and SyncFileSystem API)
+Google Now For Chrome API (Optional, enabled to show Google Now cards)
+
+Google+ API
+
+(Optional) If you are doing Chrome OS work you may also want:
+
+
+Chrome OS Hardware ID API
+
+Chrome OS Registration API
+
+
+If any of these APIs are not shown, recheck step 1.
+Go to the Credentials tab under the APIs & auth tab.
+Click the blue  Create New Client ID  button in the OAuth section to create an OAuth 2.0 client ID.
+You want "Installed Application" for the APPLICATION TYPE section
+You want "Other" for the INSTALLED APPLICATION TYPE section
+A new box should now appear titled “Client ID for native application”. In the next sections, we will refer to the values of the “Client ID” and “Client secret” fields in this box later (below).
+Click the red  Create New Key  button in the Public API Access section and create a new Browser key.
+You want to leave the box on the "Create a browser key and configure allowed referers" empty.
+A new box should appear titled "Key for browser applications". The next sections will refer to the value of the “API key” field too.
+ 
+Note that the keys you have now acquired are not for distribution purposes and must not be shared with other users. 
+ Providing Keys at Build Time
+
+If you are building Chromium yourself, you can provide keys as part of your build configuration, that way they are always baked into your binary. To do this, specify a few variables to gyp (there are three ways to do this; see the Setup section on this page). One easy way is to create, or edit, the file ~/.gyp/include.gypi (or C:\Users\yourusername\.gyp\include.gypi if you’re on Windows), with contents like the following:
+
+{
+  'variables': {
+    'google_api_key':               'your_api_key',
+    'google_default_client_id':     'your_client_id',
+    'google_default_client_secret': 'your_client_secret',
+
+    # … other variables you may have ...
+  },
+}
+
+where the text “(your API_KEY)” is replaced with your API_KEY value, and so forth.
+
+Once you’ve done this, run gclient sync or gclient runhooks, and your builds after that will use your keys.
+
+
+Note that the above is equivalent to providing more flags gyp, i.e. build/gyp_chromium -Dgoogle_api_key='...' -Dgoogle_default_client_id='...' -Dgoogle_default_client_secret='...' . 
+
+Depending on the way you build Chromium, the latter may be more practical for you.
+ Providing Keys at Runtime
+
+If you prefer, you can build a Chromium binary (or use a pre-built Chromium binary) without API keys baked in, and instead provide them at runtime. To do so, set the environment variables GOOGLE_API_KEY, GOOGLE_DEFAULT_CLIENT_ID and GOOGLE_DEFAULT_CLIENT_SECRET to your "API key", "Client ID" and "Client secret" values respectively.
+ Getting Keys for Your Chromium Derivative
+
+Many of the Google APIs used by Chromium code are specific to Google Chrome and not intended for use in derived products.  In the API Console (http://developers.google.com/console) you may be able to purchase additional quota for some of the APIs listed above.  For APIs that do not have a "Pricing" link, additional quota is not available for purchase.
